@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        #canvas {
+            background: lightblue;
+            width: 600px;
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <br>
+    <label id="showKey">abc</label>
+    <br>
+    <label id="temp">abc</label>
+    <script type="text/javascript">
+        var keycode = {
+            BACKSPACE: 8,
+            TAB: 9,
+            ENTER: 13,
+            COMMAND: 15,
+            SHIFT: 16,
+            CONTROL: 17,
+            ALTERNATE: 18,
+            PAUSE: 19,
+            CAPS_LOCK: 20,
+            NUMPAD: 21,
+            ESCAPE: 27,
+            SPACE: 32,
+            PAGE_UP: 33,
+            PAGE_DOWN: 34,
+            END: 35,
+            HOME: 36,
+
+            //arrows
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40,
+
+            INSERT: 45,
+            DELETE: 46,
+
+            //numbers
+            NUMBER_0: 48,
+
+            NUMBER_1: 49,
+            NUMBER_2: 50,
+            NUMBER_3: 51,
+            NUMBER_4: 52,
+            NUMBER_5: 53,
+            NUMBER_6: 54,
+            NUMBER_7: 55,
+            NUMBER_8: 56,
+            NUMBER_9: 57,
+
+            //letters
+            A: 65,
+            B: 66,
+            C: 67,
+            D: 68,
+            E: 69,
+            F: 70,
+            G: 71,
+            H: 72,
+            I: 73,
+            J: 74,
+            K: 75,
+            L: 76,
+            M: 77,
+            N: 78,
+            O: 79,
+            P: 80,
+            Q: 81,
+            R: 82,
+            S: 83,
+            T: 84,
+            U: 85,
+            V: 86,
+            W: 87,
+            X: 88,
+            Y: 89,
+            Z: 90,
+
+            LEFT_WINDOW_KEY: 91,
+            RIGHT_WINDOW_KEY: 92,
+            SELECT_KEY: 93,
+
+            //number pad
+            NUMPAD_0: 96,
+            NUMPAD_1: 97,
+            NUMPAD_2: 98,
+            NUMPAD_3: 99,
+            NUMPAD_4: 100,
+            NUMPAD_5: 101,
+            NUMPAD_6: 102,
+            NUMPAD_7: 103,
+            NUMPAD_8: 104,
+            NUMPAD_9: 105,
+            NUMPAD_MULTIPLY: 106,
+            NUMPAD_ADD: 107,
+            NUMPAD_ENTER: 108,
+            NUMPAD_SUBTRACT: 109,
+            NUMPAD_DECIMAL: 110,
+            NUMPAD_DIVIDE: 111,
+
+            //function keys
+            F1: 112,
+            F2: 113,
+            F3: 114,
+            F4: 115,
+            F5: 116,
+            F6: 117,
+            F7: 118,
+            F8: 119,
+            F9: 120,
+            F10: 121,
+            F11: 122,
+            F12: 123,
+            F13: 124,
+            F14: 125,
+            F15: 126,
+
+            NUM_LOCK: 144,
+            SCROLL_LOCK: 145,
+
+            //punctuation
+            SEMICOLON: 186,
+            EQUAL: 187,
+            COMMA: 188,
+            MINUS: 189,
+            PERIOD: 190,
+            SLASH: 191,
+            BACKQUOTE: 192,
+            LEFTBRACKET: 219,
+            BACKSLASH: 220,
+            RIGHTBRACKET: 221,
+            QUOTE: 222
+        };
+
+        function returnNameOfKey(code, isShifted) {
+
+            for (var i in keycode) {
+
+                if (keycode[i] == code) {
+                    if (isShifted) {
+                        return "Shift+ " + i;
+                    }
+                    else {
+                        return i;
+                    }
+
+                }
+
+            }
+        };
+        var theKey = "";
+        var theKeyNumber = "";
+        var lastDownTarget, canvas;
+        window.onload = function() {
+            //canvas = document.getElementById('canvas');
+
+            document.addEventListener('mousedown', function(event) {
+                lastDownTarget = event.target;
+                //alert('mousedown');
+            }, false);
+
+            document.addEventListener('keydown', function(event) {
+                if (lastDownTarget == canvas) {
+                    //console.log(event.shiftKey);
+                    //console.log(event.altKey);
+                    //console.log(event.ctrlKey);
+                    //document.getElementById("showKey").innerText = returnNameOfKey(event.keyCode, event.shiftKey);
+                    //draw(returnNameOfKey(event.keyCode, event.shiftKey));
+                    //console.log(String.fromCharCode(event.keyCode));
+                    theKeyNumber = event.keyCode;
+                    theKey = String.fromCharCode(event.keyCode);
+                }
+            }, false);
+        }
+        var fallingKey = function(x, y, keyCode) {
+            this.x = x;
+            this.y = y;
+            this.keyCode = keyCode;
+        }
+        var canvas = document.getElementById('canvas');
+        canvas.width = 1000; //horizontal resolution (?) - increase for better looking text
+        canvas.height = 1000; //vertical resolution (?) - increase for better looking text
+        canvas.style.width = 600; //actual width of canvas
+        canvas.style.height = 600; //actual height of canvas
+        var ctx = canvas.getContext('2d');
+        //ctx.font = "18px serif";
+        var textSize = 64;
+        ctx.font = textSize.toString() + 'px Courier New';
+        ctx.textAlign = 'center';
+
+        function draw(text) {
+
+
+
+            ctx.fillText(text, 10, 50);
+        }
+
+        var start = null;
+        var element = document.getElementById("canvas");
+
+        function percentOfNumber(percentage, theNumber) {
+            return (percentage / 100) * theNumber;
+        };
+
+        function toPercent(littleNumber, bigNumber) {
+            return ((littleNumber / bigNumber) * 100);
+        };
+
+        var keyObj = function(x, y, keycode) {
+            this.x = x;
+            this.y = y;
+            this.keyCode = keycode;
+            this.dead = false;
+        }
+        keyObj.prototype.draw = function(context) {
+            if (!this.dead) {
+                var theText = String.fromCharCode(this.keyCode);
+                context.save();
+
+                context.fillStyle = "rgba(" + this.colorByHeight() + ", 64, 64, 1)" //"white";
+                context.strokeStyle = "black";
+                context.lineWidth = parseInt(textSize / 8);
+                var metrics = context.measureText(theText);
+                var width = metrics.width;
+                var backRect = {
+                    x: this.x - (width * 0.5) - 10,
+                    y: this.y - (textSize),
+                    w: width + 20,
+                    h: textSize * 1.25
+                };
+                ctx.fillRect(backRect.x, backRect.y, backRect.w, backRect.h);
+                context.fillStyle = "white";
+                context.strokeText(theText, this.x, this.y);
+                context.fillText(theText, this.x, this.y);
+                context.restore();
+            }
+        }
+        keyObj.prototype.update = function() {
+            this.y += 1;
+            if (this.y > canvas.height) {
+                this.y = 0;
+                if (this.dead) {
+                    this.x = Math.random() * canvas.width;
+
+                    this.keyCode = randomIntFromInterval(65, 90);
+                    this.dead = false;
+
+                }
+            }
+        };
+        keyObj.prototype.percentOfHeight = function() {
+            return toPercent(this.y, canvas.height);
+        };
+        keyObj.prototype.colorByHeight = function() {
+            var perc = this.percentOfHeight();
+            return parseInt(percentOfNumber(perc, 255));
+
+        };
+
+        function randomIntFromInterval(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+        var keyObjArr = [];
+        for (var i = 0; i < 25; i++) {
+            var theKeyCode = randomIntFromInterval(65, 90);
+            keyObjArr.push(new keyObj(Math.random() * canvas.width, Math.random() * canvas.height, theKeyCode));
+        }
+
+
+
+        function step() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            draw(theKey);
+            for (var i = 0; i < keyObjArr.length; i++) {
+                keyObjArr[i].update();
+                keyObjArr[i].draw(ctx);
+                //console.log(theKey);
+                if (keyObjArr[i].keyCode === theKeyNumber) {
+                    keyObjArr[i].dead = true;
+                }
+            }
+            var count = 0;
+            for (var i = 0; i < keyObjArr.length; i++) {
+                if (count > 0) {
+                    break;
+                }
+                else {
+                    if (keyObjArr[i].keyCode === theKeyNumber) {
+                        keyObjArr[i].dead = true;
+                        count++;
+                        break;
+                    }
+                }
+
+            }
+            // document.getElementById("temp").innerHTML = keyObjArr[0].x + " : " + keyObjArr[0].y + " : " + keyObjArr[0].percentOfHeight() + " : " + keyObjArr[0].colorByHeight();
+            window.requestAnimationFrame(step);
+
+        }
+
+        window.requestAnimationFrame(step);
+    </script>
+
+</body>
+
+</html>
